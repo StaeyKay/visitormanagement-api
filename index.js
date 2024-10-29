@@ -1,6 +1,7 @@
 import express from "express";
 import "dotenv/config";
 import { dbConnection } from "./config/db.js";
+import { visitorRouter } from "./routes/visitor_route.js";
 
 const app = express()
 
@@ -8,6 +9,7 @@ const app = express()
 app.use(express.json());
 
 // Use routes
+app.use('/api/v1', visitorRouter)
 
 // Connect to database
 dbConnection();
