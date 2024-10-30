@@ -17,7 +17,7 @@ app.use("/api/v1", visitorRouter);
 dbConnection();
 
 // Listen on port
-const PORT = process.env.PORT || 5060;
+const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}`);
 });

@@ -7,7 +7,7 @@ const visitorSchema = new Schema(
     employeeName: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     purposeOfVisit: { type: String, required: true },
-    arrivalTime: { type: Date },
+    arrivalTime: { type: String },
     depatureTime: { type: Date },
   },
   {
