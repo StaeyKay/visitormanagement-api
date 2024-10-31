@@ -4,7 +4,7 @@ import { VisitorModel } from "../models/visitor_model.js";
 export const addVisitor = async (req, res) => {
   try {
     const visitor = await VisitorModel.create(req.body);
-    res.status(200).json(visitor);
+    res.status(200).json({ message: "Check-in successful", visitor });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json(error.message);
@@ -55,6 +55,7 @@ export const getAllVisitors = async (req, res) => {
 
     const visitors = await VisitorModel.find(queryFilter)
       .select(selectFields)
+      .sort({ arrivalTime: -1 })
       .limit(Number(limit) || 0)
       .skip(skip);
 
