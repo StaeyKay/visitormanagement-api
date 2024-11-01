@@ -65,3 +65,23 @@ export const getAllVisitors = async (req, res) => {
     return res.status(500).json(error.message);
   }
 };
+
+// Function to update the departure time of a visitor
+export const updateTime = async (req, res) => {
+  try {
+    const visitor = await VisitorModel.findByIdAndUpdate(
+      req.params.id,
+      { departureTime: new Date() },
+      { new: true }
+    );
+
+    if (!visitor) {
+      return res.status(404).json({ error: "Visitor not found" });
+    }
+
+    res.status(200).json({ message: "Checkout successful", visitor });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json(error.message);
+  }
+};
