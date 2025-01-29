@@ -69,17 +69,30 @@ export const getAllVisitors = async (req, res) => {
 // Function to update the departure time of a visitor
 export const updateTime = async (req, res) => {
   try {
-    const visitor = await VisitorModel.findByIdAndUpdate(
-      req.params.id,
-      { departureTime: new Date() },
-      { new: true }
-    );
+    const visitor = await VisitorModel.findById(req.params.id);
 
     if (!visitor) {
       return res.status(404).json({ error: "Visitor not found" });
     }
 
-    res.status(200).json({ message: "Checkout successful", visitor });
+    // Check if visitor has already checked out
+    if (visitor.departureTime) {
+      return res.status(400).json({
+        error: "Visitor has already checked out",
+        checkoutTime: visitor.departureTime,
+      });
+    }
+
+    // Update departure time only if not already set
+    const updatedVisitor = await VisitorModel.findByIdAndUpdate(
+      req.params.id,
+      { departureTime: new Date() },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json({ message: "Checkout successful", visitor: updatedVisitor });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json(error.message);
