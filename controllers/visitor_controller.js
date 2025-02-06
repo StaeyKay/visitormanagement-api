@@ -53,13 +53,45 @@ export const getAllVisitors = async (req, res) => {
       };
     }
 
+    // Define time ranges for daily and monthly counts
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    // Get daily and monthly visitor counts
+    const dailyCount = await VisitorModel.countDocuments({
+      arrivalTime: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    const monthlyCount = await VisitorModel.countDocuments({
+      arrivalTime: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
     const visitors = await VisitorModel.find(queryFilter)
       .select(selectFields)
       .sort({ arrivalTime: -1 })
       .limit(Number(limit) || 0)
       .skip(skip);
 
-    res.status(200).json(visitors);
+    // Calculate total time spent for each visitor
+    const visitorsWithTimeSpent = visitors.map((visitor) => {
+      const arrival = new Date(visitor.arrivalTime);
+      const departure = visitor.departureTime ? new Date(visitor.departureTime) : null;
+      
+      const totalTimeSpent = departure
+        ? Math.round((departure - arrival) / 60000) // Convert to minutes
+        : null;
+
+      return {
+        ...visitor.toObject(),
+        totalTimeSpent, // Add the calculated field
+      };
+    });
+
+    res.status(200).json({visitors: visitorsWithTimeSpent, dailyCount, monthlyCount});
   } catch (error) {
     console.log(error.message);
     return res.status(500).json(error.message);
