@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import { dbConnection } from "./config/db.js";
 import { visitorRouter } from "./routes/visitor_route.js";
+import { employeeRouter } from "./routes/employee_route.js";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cors({ Credentials: true, origin: "*" }));
 
 // Use routes
 app.use("/api/v1", visitorRouter);
+app.use("/api/v1", employeeRouter);
 
 // Connect to database
 dbConnection();
